@@ -7,3 +7,6 @@ pandas>=2.0.0     # For CSV and data manipulation
 
 # Configuration management
 python-dotenv>=1.0.0
+
+# Web interface
+flask>=3.0.0

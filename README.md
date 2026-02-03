@@ -2,15 +2,29 @@
 
 Automated tool for retrieving Jira tickets and generating comprehensive reports in CSV or PDF format.
 
+## 🌟 NEW: Web Interface
+
+**Generate reports with just a few clicks!** No configuration files needed.
+
+```bash
+pip install -r requirements.txt
+python start.py
+```
+
+Then fill in the form in your browser and click "Generate Report" - that's it!
+
+See [QUICKSTART_WEB.md](QUICKSTART_WEB.md) for details.
+
 ## Features
 
+- 🌐 **Simple Web Interface**: Generate reports with a user-friendly web form (NEW!)
 - 🔐 **Secure Authentication**: Uses Jira API tokens for secure authentication
 - 📊 **Multiple Report Formats**: Generate reports in CSV or PDF format
 - 📈 **Comprehensive Data**: Includes ticket ID, status, summary, assignee, priority, custom fields, and more
 - 📉 **Summary Statistics**: Automatic calculation of ticket distribution by status, type, priority, and assignee
 - ⚡ **Error Handling**: Robust error handling for authentication, timeouts, and API issues
 - 🔧 **Modular Design**: Clean, modular code structure for easy maintenance and extension
-- 🎯 **Flexible Configuration**: Support for config files and environment variables
+- 🎯 **Flexible Configuration**: Web interface, config files, or environment variables
 
 ## Prerequisites
 
@@ -31,9 +45,15 @@ Automated tool for retrieving Jira tickets and generating comprehensive reports 
    pip install -r requirements.txt
    ```
 
-3. **Configure the application**:
+3. **Choose your method**:
 
-   **Option 1: Using a configuration file (recommended)**
+   **Method 1: Web Interface (Easiest)**
+   ```bash
+   python start.py
+   ```
+   Then use the web form to enter your Jira details and generate reports!
+
+   **Method 2: Configuration file**
    
    Copy the example configuration file and edit it with your details:
    ```bash
@@ -53,7 +73,7 @@ Automated tool for retrieving Jira tickets and generating comprehensive reports 
    default_format = csv
    ```
 
-   **Option 2: Using environment variables**
+   **Method 3: Environment variables**
    
    Set the following environment variables:
    ```bash
@@ -67,7 +87,24 @@ Automated tool for retrieving Jira tickets and generating comprehensive reports 
 
 ## Usage
 
-### Basic Usage
+### Web Interface (Recommended)
+
+The easiest way to generate reports:
+
+```bash
+python start.py
+```
+
+This will:
+1. Start a local web server
+2. Open your browser automatically
+3. Show a simple form where you can:
+   - Enter your Jira credentials
+   - Select report format (CSV, PDF, or both)
+   - Click "Generate Report"
+   - Download your reports
+
+### Command Line Interface
 
 Generate a CSV report with default settings:
 ```bash
@@ -179,19 +216,28 @@ All errors are logged with descriptive messages to help troubleshoot issues.
 
 ```
 report_automate/
-├── jira_automation.py      # Main automation script
+├── start.py                # Quick start script for web interface (NEW!)
+├── app.py                  # Web application (NEW!)
+├── templates/              # Web interface templates (NEW!)
+│   └── index.html          # Main web page (NEW!)
+├── jira_automation.py      # Command-line automation script
 ├── jira_client.py          # Jira API client with authentication and ticket retrieval
 ├── report_generator.py     # Report generation in CSV and PDF formats
 ├── config_manager.py       # Configuration management
 ├── requirements.txt        # Python dependencies
 ├── config.example.ini      # Example configuration file
 ├── .gitignore              # Git ignore rules
-└── README.md               # This file
+├── README.md               # This file
+├── QUICKSTART.md           # CLI quick start guide
+└── QUICKSTART_WEB.md       # Web interface quick start guide (NEW!)
 ```
 
 ### Module Descriptions
 
-- **jira_automation.py**: Main entry point that orchestrates the automation workflow
+- **start.py**: Easy launcher for the web interface
+- **app.py**: Flask web application for browser-based report generation
+- **templates/index.html**: Beautiful, user-friendly web interface
+- **jira_automation.py**: Main entry point for command-line usage
 - **jira_client.py**: Handles all Jira API interactions including authentication, connection testing, and ticket retrieval
 - **report_generator.py**: Generates formatted reports in CSV and PDF formats with summary statistics
 - **config_manager.py**: Manages configuration from files and environment variables
