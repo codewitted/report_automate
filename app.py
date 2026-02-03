@@ -118,9 +118,17 @@ def generate_report():
             identifier = project_key
         
         if not tickets:
+            error_msg = 'No tickets found'
+            if report_mode == 'single':
+                error_msg = f'Ticket not found: {ticket_id}'
+            elif report_mode == 'jql':
+                error_msg = f'No tickets match the query: {jql}'
+            elif report_mode == 'project':
+                error_msg = f'No tickets found in project {project_key}'
+            
             return jsonify({
                 'success': False,
-                'error': f'No tickets found'
+                'error': error_msg
             }), 404
         
         # Generate reports

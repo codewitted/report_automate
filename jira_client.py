@@ -169,12 +169,15 @@ class JiraClient:
         """
         Retrieve a single ticket by its ID or key.
         
+        Note: Returns a ticket dictionary in the same format as items from get_project_tickets(),
+        compatible with the report generation functions.
+        
         Args:
             ticket_id: The ticket ID/key (e.g., 'PROJ-123')
             fields: List of fields to retrieve. If None, retrieves default fields.
         
         Returns:
-            Ticket dictionary containing requested fields
+            Ticket dictionary containing requested fields (same structure as get_project_tickets items)
             
         Raises:
             JiraAPIError: If the API request fails
