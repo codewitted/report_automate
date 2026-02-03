@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # For flash messages
+app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))  # For flash messages
 
 # Configuration
 REPORT_DIR = 'reports'
@@ -168,4 +168,6 @@ if __name__ == '__main__':
     print("Press Ctrl+C to stop the server")
     print("=" * 60)
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Run in debug mode only if DEBUG env var is set
+    debug_mode = os.environ.get('DEBUG', 'False').lower() == 'true'
+    app.run(debug=debug_mode, host='127.0.0.1', port=5000)
