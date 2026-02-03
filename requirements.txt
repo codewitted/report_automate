@@ -1,0 +1,9 @@
+# Jira API client
+requests>=2.31.0
+
+# Report generation
+reportlab>=4.0.0  # For PDF generation
+pandas>=2.0.0     # For CSV and data manipulation
+
+# Configuration management
+python-dotenv>=1.0.0
