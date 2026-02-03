@@ -222,10 +222,10 @@ def main():
         sys.exit(0 if success else 1)
         
     except ConfigError as e:
-        logger.error(f"Configuration Error: {str(e)}")
-        logger.error("\nPlease ensure you have either:")
-        logger.error("1. A config.ini file (see config.example.ini for template)")
-        logger.error("2. Required environment variables set (JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN, JIRA_PROJECT_KEY)")
+        logger.error(f"Configuration Error: {str(e)}\n"
+                    "Please ensure you have either:\n"
+                    "1. A config.ini file (see config.example.ini for template)\n"
+                    "2. Required environment variables set (JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN, JIRA_PROJECT_KEY)")
         sys.exit(1)
     except KeyboardInterrupt:
         logger.info("\nAutomation interrupted by user")

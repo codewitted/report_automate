@@ -321,15 +321,23 @@ class ReportGenerator:
         
         # Create table for each ticket (simplified view)
         for ticket in ticket_data:
+            # Extract values for better readability
+            summary = ticket.get('Summary', 'N/A')
+            summary_display = summary[:80] + '...' if len(summary) > 80 else summary
+            created = ticket.get('Created', 'N/A')
+            created_display = created[:10] if created != 'N/A' else 'N/A'
+            updated = ticket.get('Updated', 'N/A')
+            updated_display = updated[:10] if updated != 'N/A' else 'N/A'
+            
             ticket_table_data = [
                 ['Ticket ID:', ticket.get('Ticket ID', 'N/A')],
-                ['Summary:', ticket.get('Summary', 'N/A')[:80] + '...' if len(ticket.get('Summary', '')) > 80 else ticket.get('Summary', 'N/A')],
+                ['Summary:', summary_display],
                 ['Status:', ticket.get('Status', 'N/A')],
                 ['Type:', ticket.get('Type', 'N/A')],
                 ['Priority:', ticket.get('Priority', 'N/A')],
                 ['Assignee:', ticket.get('Assignee', 'N/A')],
-                ['Created:', ticket.get('Created', 'N/A')[:10] if ticket.get('Created') != 'N/A' else 'N/A'],
-                ['Updated:', ticket.get('Updated', 'N/A')[:10] if ticket.get('Updated') != 'N/A' else 'N/A'],
+                ['Created:', created_display],
+                ['Updated:', updated_display],
             ]
             
             ticket_table = Table(ticket_table_data, colWidths=[1.5*inch, 5*inch])
