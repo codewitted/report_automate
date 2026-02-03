@@ -17,7 +17,11 @@ See [QUICKSTART_WEB.md](QUICKSTART_WEB.md) for details.
 
 ## Features
 
-- 🌐 **Simple Web Interface**: Generate reports with a user-friendly web form (NEW!)
+- 🌐 **Simple Web Interface**: Generate reports with a user-friendly web form
+- 🎯 **Three Report Modes**: 
+  - **Project Report**: Export all tickets from a project
+  - **Single Ticket**: Export one specific ticket by ID (e.g., PROJ-123)
+  - **Custom Query (JQL)**: Use Jira Query Language for advanced filtering
 - 🔐 **Secure Authentication**: Uses Jira API tokens for secure authentication
 - 📊 **Multiple Report Formats**: Generate reports in CSV or PDF format
 - 📈 **Comprehensive Data**: Includes ticket ID, status, summary, assignee, priority, custom fields, and more
@@ -25,6 +29,7 @@ See [QUICKSTART_WEB.md](QUICKSTART_WEB.md) for details.
 - ⚡ **Error Handling**: Robust error handling for authentication, timeouts, and API issues
 - 🔧 **Modular Design**: Clean, modular code structure for easy maintenance and extension
 - 🎯 **Flexible Configuration**: Web interface, config files, or environment variables
+- 📖 **Built-in Help**: Inline instructions and JQL examples
 
 ## Prerequisites
 

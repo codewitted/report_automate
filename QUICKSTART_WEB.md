@@ -18,22 +18,44 @@ That's it! The web interface will open automatically in your browser.
 
 ## 3. Generate Reports
 
-In the web interface:
+The tool supports **three report modes**:
 
-1. **Enter your Jira credentials**:
-   - Jira Instance URL (e.g., https://your-company.atlassian.net)
-   - Your email address
-   - Your API token ([Generate one here](https://id.atlassian.com/manage-profile/security/api-tokens))
-   - Project key (e.g., PROJ, DEV)
+### 📊 Project Report
+Export all tickets from a Jira project:
+1. Enter Jira credentials
+2. Select "Project Report" mode
+3. Enter project key (e.g., PROJ, DEV)
+4. Choose format (CSV/PDF/Both)
+5. Click "Generate Report"
 
-2. **Select report format**:
-   - CSV (spreadsheet)
-   - PDF (document)
-   - Both
+### 🎯 Single Ticket
+Export a specific ticket by its ID:
+1. Enter Jira credentials
+2. Select "Single Ticket" mode
+3. Enter ticket ID (e.g., PROJ-123)
+4. Choose format
+5. Click "Generate Report"
 
-3. **Click "Generate Report"**
+### 🔍 Custom Query (JQL)
+Use Jira Query Language for advanced filtering:
+1. Enter Jira credentials
+2. Select "Custom Query (JQL)" mode
+3. Enter your JQL query (e.g., `assignee = currentUser() AND status != Done`)
+4. Choose format
+5. Click "Generate Report"
 
-4. **Download your reports** using the download buttons
+### JQL Examples:
+- `status = 'In Progress' AND assignee = currentUser()`
+- `created >= -7d AND priority = High`
+- `project = PROJ AND labels = urgent`
+
+## Features
+
+✅ **Three Report Modes**: Project reports, single ticket, or custom JQL queries  
+✅ **Multiple Formats**: Export as CSV, PDF, or both  
+✅ **Built-in Help**: Inline instructions and examples  
+✅ **Advanced Filtering**: Use JQL for complex queries  
+✅ **No Config Files**: Enter credentials directly in the web form  
 
 ## Alternative: Command Line
 

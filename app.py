@@ -44,18 +44,17 @@ def generate_report():
         base_url = request.form.get('base_url', '').strip()
         email = request.form.get('email', '').strip()
         api_token = request.form.get('api_token', '').strip()
-        project_key = request.form.get('project_key', '').strip()
         report_format = request.form.get('format', 'csv')
-        max_results = int(request.form.get('max_results', 100))
         
-        # Validate inputs
-        if not all([base_url, email, api_token, project_key]):
+        # Get report mode
+        report_mode = request.form.get('report_mode', 'project')
+        
+        # Validate basic inputs
+        if not all([base_url, email, api_token]):
             return jsonify({
                 'success': False,
-                'error': 'All fields are required'
+                'error': 'Base URL, email, and API token are required'
             }), 400
-        
-        logger.info(f"Generating report for project {project_key}")
         
         # Initialize Jira client
         client = JiraClient(
@@ -67,16 +66,61 @@ def generate_report():
         # Test connection
         client.test_connection()
         
-        # Retrieve tickets
-        tickets = client.get_project_tickets(
-            project_key=project_key,
-            max_results=max_results
-        )
+        # Retrieve tickets based on mode
+        tickets = []
+        identifier = ""
+        
+        if report_mode == 'single':
+            # Single ticket mode
+            ticket_id = request.form.get('ticket_id', '').strip()
+            if not ticket_id:
+                return jsonify({
+                    'success': False,
+                    'error': 'Ticket ID is required for single ticket mode'
+                }), 400
+            
+            logger.info(f"Retrieving single ticket: {ticket_id}")
+            ticket = client.get_single_ticket(ticket_id)
+            tickets = [ticket]
+            identifier = ticket_id
+            
+        elif report_mode == 'jql':
+            # Custom JQL mode
+            jql = request.form.get('jql_query', '').strip()
+            max_results = int(request.form.get('max_results', 100))
+            
+            if not jql:
+                return jsonify({
+                    'success': False,
+                    'error': 'JQL query is required for JQL mode'
+                }), 400
+            
+            logger.info(f"Retrieving tickets with JQL: {jql}")
+            tickets = client.get_tickets_by_jql(jql, max_results=max_results)
+            identifier = "custom_query"
+            
+        else:
+            # Project mode (default)
+            project_key = request.form.get('project_key', '').strip()
+            max_results = int(request.form.get('max_results', 100))
+            
+            if not project_key:
+                return jsonify({
+                    'success': False,
+                    'error': 'Project key is required for project mode'
+                }), 400
+            
+            logger.info(f"Generating report for project {project_key}")
+            tickets = client.get_project_tickets(
+                project_key=project_key,
+                max_results=max_results
+            )
+            identifier = project_key
         
         if not tickets:
             return jsonify({
                 'success': False,
-                'error': f'No tickets found in project {project_key}'
+                'error': f'No tickets found'
             }), 404
         
         # Generate reports
@@ -86,7 +130,7 @@ def generate_report():
         if report_format in ['csv', 'both']:
             csv_file = report_gen.generate_csv_report(
                 tickets=tickets,
-                project_key=project_key
+                project_key=identifier
             )
             if csv_file:
                 generated_files.append({
@@ -98,7 +142,7 @@ def generate_report():
         if report_format in ['pdf', 'both']:
             pdf_file = report_gen.generate_pdf_report(
                 tickets=tickets,
-                project_key=project_key
+                project_key=identifier
             )
             if pdf_file:
                 generated_files.append({
@@ -111,7 +155,7 @@ def generate_report():
         
         return jsonify({
             'success': True,
-            'message': f'Successfully generated {len(generated_files)} report(s) from {len(tickets)} tickets',
+            'message': f'Successfully generated {len(generated_files)} report(s) from {len(tickets)} ticket(s)',
             'files': generated_files,
             'ticket_count': len(tickets)
         })

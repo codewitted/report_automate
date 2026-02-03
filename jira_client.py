@@ -164,3 +164,111 @@ class JiraClient:
             
         except requests.exceptions.RequestException as e:
             raise JiraAPIError(f"Failed to retrieve custom fields: {str(e)}")
+    
+    def get_single_ticket(self, ticket_id: str, fields: Optional[List[str]] = None) -> Dict:
+        """
+        Retrieve a single ticket by its ID or key.
+        
+        Args:
+            ticket_id: The ticket ID/key (e.g., 'PROJ-123')
+            fields: List of fields to retrieve. If None, retrieves default fields.
+        
+        Returns:
+            Ticket dictionary containing requested fields
+            
+        Raises:
+            JiraAPIError: If the API request fails
+        """
+        # Default fields to retrieve if none specified
+        if fields is None:
+            fields = [
+                'summary', 'status', 'assignee', 'reporter', 'priority',
+                'created', 'updated', 'resolutiondate', 'description',
+                'issuetype', 'labels', 'components'
+            ]
+        
+        try:
+            url = f"{self.base_url}/rest/api/3/issue/{ticket_id}"
+            params = {
+                'fields': ','.join(fields)
+            }
+            
+            logger.info(f"Retrieving ticket: {ticket_id}")
+            response = self.session.get(url, params=params, timeout=self.timeout)
+            
+            if response.status_code == 401:
+                raise JiraAPIError("Authentication failed. Please check your credentials.")
+            elif response.status_code == 404:
+                raise JiraAPIError(f"Ticket '{ticket_id}' not found.")
+            
+            response.raise_for_status()
+            
+            ticket = response.json()
+            logger.info(f"Successfully retrieved ticket {ticket_id}")
+            return ticket
+            
+        except requests.exceptions.Timeout:
+            raise JiraAPIError(f"Request timeout after {self.timeout} seconds")
+        except requests.exceptions.ConnectionError:
+            raise JiraAPIError("Connection error. Please check your network connection.")
+        except requests.exceptions.JSONDecodeError:
+            raise JiraAPIError("Failed to parse API response. The server returned invalid JSON.")
+        except requests.exceptions.RequestException as e:
+            raise JiraAPIError(f"API request failed: {str(e)}")
+    
+    def get_tickets_by_jql(self, jql: str, max_results: int = 100, 
+                           fields: Optional[List[str]] = None) -> List[Dict]:
+        """
+        Retrieve tickets using a custom JQL query.
+        
+        Args:
+            jql: JQL query string
+            max_results: Maximum number of tickets to retrieve (default: 100)
+            fields: List of fields to retrieve. If None, retrieves default fields.
+        
+        Returns:
+            List of ticket dictionaries containing requested fields
+            
+        Raises:
+            JiraAPIError: If the API request fails
+        """
+        # Default fields to retrieve if none specified
+        if fields is None:
+            fields = [
+                'summary', 'status', 'assignee', 'reporter', 'priority',
+                'created', 'updated', 'resolutiondate', 'description',
+                'issuetype', 'labels', 'components'
+            ]
+        
+        try:
+            url = f"{self.base_url}/rest/api/3/search"
+            params = {
+                'jql': jql,
+                'maxResults': max_results,
+                'fields': ','.join(fields)
+            }
+            
+            logger.info(f"Retrieving tickets with JQL: {jql}")
+            response = self.session.get(url, params=params, timeout=self.timeout)
+            
+            if response.status_code == 400:
+                raise JiraAPIError("Invalid JQL query. Please check your query syntax.")
+            elif response.status_code == 401:
+                raise JiraAPIError("Authentication failed. Please check your credentials.")
+            
+            response.raise_for_status()
+            
+            data = response.json()
+            tickets = data.get('issues', [])
+            
+            logger.info(f"Successfully retrieved {len(tickets)} tickets")
+            return tickets
+            
+        except requests.exceptions.Timeout:
+            raise JiraAPIError(f"Request timeout after {self.timeout} seconds")
+        except requests.exceptions.ConnectionError:
+            raise JiraAPIError("Connection error. Please check your network connection.")
+        except requests.exceptions.JSONDecodeError:
+            raise JiraAPIError("Failed to parse API response. The server returned invalid JSON.")
+        except requests.exceptions.RequestException as e:
+            raise JiraAPIError(f"API request failed: {str(e)}")
