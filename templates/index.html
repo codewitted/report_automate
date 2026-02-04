@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jira Report Automation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .help-banner {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+        }
+
+        .help-banner h3 {
+            color: #1976D2;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .help-banner ul {
+            margin-left: 20px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .help-banner li {
+            margin-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .help-text a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .help-text a:hover {
+            text-decoration: underline;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .download-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .download-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .download-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .download-link:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-option {
+            flex: 1;
+        }
+
+        .mode-option input[type="radio"] {
+            display: none;
+        }
+
+        .mode-option label {
+            display: block;
+            padding: 12px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0;
+            font-size: 13px;
+        }
+
+        .mode-option input[type="radio"]:checked + label {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .format-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .format-option {
+            flex: 1;
+        }
+
+        .format-option input[type="radio"] {
+            display: none;
+        }
+
+        .format-option label {
+            display: block;
+            padding: 12px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0;
+        }
+
+        .format-option input[type="radio"]:checked + label {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .conditional-field {
+            display: none;
+        }
+
+        .advanced-toggle {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .advanced-toggle a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .advanced-toggle a:hover {
+            text-decoration: underline;
+        }
+
+        .advanced-section {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Jira Report Automation</h1>
+        <p class="subtitle">Generate comprehensive Jira reports with just a few clicks</p>
+
+        <div class="help-banner">
+            <h3>📖 How to Use This Tool</h3>
+            <ul>
+                <li><strong>Project Report:</strong> Export all tickets from a Jira project (e.g., "PROJ")</li>
+                <li><strong>Single Ticket:</strong> Export one specific ticket by ID (e.g., "PROJ-123")</li>
+                <li><strong>Custom Query (JQL):</strong> Use Jira Query Language for advanced filtering</li>
+            </ul>
+        </div>
+
+        <div id="alertBox" class="alert"></div>
+
+        <form id="reportForm">
+            <!-- Authentication Fields -->
+            <div class="form-group">
+                <label for="base_url">Jira Instance URL</label>
+                <input type="text" id="base_url" name="base_url" placeholder="https://your-company.atlassian.net" required>
+                <div class="help-text">Your Jira instance URL (e.g., https://company.atlassian.net)</div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="your-email@example.com" required>
+                <div class="help-text">Your Jira account email</div>
+            </div>
+
+            <div class="form-group">
+                <label for="api_token">API Token</label>
+                <input type="password" id="api_token" name="api_token" placeholder="Enter your Jira API token" required>
+                <div class="help-text">
+                    Generate token at: <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">Atlassian API Tokens</a>
+                </div>
+            </div>
+
+            <!-- Report Mode Selector -->
+            <div class="form-group">
+                <label>Report Mode</label>
+                <div class="mode-selector">
+                    <div class="mode-option">
+                        <input type="radio" id="mode_project" name="report_mode" value="project" checked>
+                        <label for="mode_project">📊 Project Report</label>
+                    </div>
+                    <div class="mode-option">
+                        <input type="radio" id="mode_single" name="report_mode" value="single">
+                        <label for="mode_single">🎯 Single Ticket</label>
+                    </div>
+                    <div class="mode-option">
+                        <input type="radio" id="mode_jql" name="report_mode" value="jql">
+                        <label for="mode_jql">🔍 Custom Query (JQL)</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Key Field (for project mode) -->
+            <div class="form-group conditional-field" id="project_field">
+                <label for="project_key">Project Key</label>
+                <input type="text" id="project_key" name="project_key" placeholder="PROJ">
+                <div class="help-text">The project key (e.g., PROJ, DEV, MYPROJECT)</div>
+            </div>
+
+            <!-- Ticket ID Field (for single ticket mode) -->
+            <div class="form-group conditional-field" id="ticket_field">
+                <label for="ticket_id">Ticket ID</label>
+                <input type="text" id="ticket_id" name="ticket_id" placeholder="PROJ-123">
+                <div class="help-text">Full ticket ID including project key (e.g., PROJ-123, DEV-456)</div>
+            </div>
+
+            <!-- JQL Query Field (for JQL mode) -->
+            <div class="form-group conditional-field" id="jql_field">
+                <label for="jql_query">JQL Query</label>
+                <textarea id="jql_query" name="jql_query" placeholder="project = PROJ AND status = 'In Progress'"></textarea>
+                <div class="help-text">
+                    Enter a custom JQL query. Examples:<br>
+                    • <code>assignee = currentUser() AND status != Done</code><br>
+                    • <code>created >= -7d AND priority = High</code><br>
+                    Learn more: <a href="https://support.atlassian.com/jira-software-cloud/docs/use-advanced-search-with-jira-query-language-jql/" target="_blank">JQL Documentation</a>
+                </div>
+            </div>
+
+            <!-- Report Format -->
+            <div class="form-group">
+                <label>Report Format</label>
+                <div class="format-options">
+                    <div class="format-option">
+                        <input type="radio" id="format_csv" name="format" value="csv" checked>
+                        <label for="format_csv">📊 CSV</label>
+                    </div>
+                    <div class="format-option">
+                        <input type="radio" id="format_pdf" name="format" value="pdf">
+                        <label for="format_pdf">📄 PDF</label>
+                    </div>
+                    <div class="format-option">
+                        <input type="radio" id="format_both" name="format" value="both">
+                        <label for="format_both">📦 Both</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Options -->
+            <div class="advanced-toggle">
+                <a id="advancedToggle">⚙️ Advanced Options</a>
+            </div>
+
+            <div class="advanced-section" id="advancedSection">
+                <div class="form-group">
+                    <label for="max_results">Maximum Tickets</label>
+                    <input type="number" id="max_results" name="max_results" value="100" min="1" max="1000">
+                    <div class="help-text">Number of tickets to retrieve (default: 100, max: 1000). only applies to Project and JQL modes.</div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-primary" id="generateBtn">
+                    🎯 Generate Report
+                </button>
+            </div>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 15px; color: #666;">Generating your report...</p>
+        </div>
+
+        <div class="download-section" id="downloadSection">
+            <h3>✅ Reports Generated Successfully!</h3>
+            <p id="reportStats" style="margin-bottom: 15px; color: #666;"></p>
+            <div id="downloadLinks"></div>
+        </div>
+    </div>
+
+    <script>
+        // Show/hide fields based on report mode
+        function updateFieldsVisibility() {
+            const mode = document.querySelector('input[name="report_mode"]:checked').value;
+            
+            // Hide all conditional fields
+            document.querySelectorAll('.conditional-field').forEach(field => {
+                field.style.display = 'none';
+            });
+            
+            // Show relevant field
+            if (mode === 'project') {
+                document.getElementById('project_field').style.display = 'block';
+            } else if (mode === 'single') {
+                document.getElementById('ticket_field').style.display = 'block';
+            } else if (mode === 'jql') {
+                document.getElementById('jql_field').style.display = 'block';
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateFieldsVisibility();
+            
+            // Add event listeners to radio buttons
+            document.querySelectorAll('input[name="report_mode"]').forEach(radio => {
+                radio.addEventListener('change', updateFieldsVisibility);
+            });
+        });
+
+        // Toggle advanced options
+        document.getElementById('advancedToggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            const section = document.getElementById('advancedSection');
+            if (section.style.display === 'none' || section.style.display === '') {
+                section.style.display = 'block';
+                this.textContent = '⚙️ Hide Advanced Options';
+            } else {
+                section.style.display = 'none';
+                this.textContent = '⚙️ Advanced Options';
+            }
+        });
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.className = 'alert alert-' + type;
+            alertBox.textContent = message;
+            alertBox.style.display = 'block';
+            
+            setTimeout(() => {
+                alertBox.style.display = 'none';
+            }, 5000);
+        }
+
+        // Handle form submission
+        document.getElementById('reportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const generateBtn = document.getElementById('generateBtn');
+            const loading = document.getElementById('loading');
+            const downloadSection = document.getElementById('downloadSection');
+            
+            // Reset states
+            downloadSection.style.display = 'none';
+            generateBtn.disabled = true;
+            loading.style.display = 'block';
+            
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Show success message
+                    showAlert(result.message, 'success');
+                    
+                    // Update stats
+                    document.getElementById('reportStats').textContent = 
+                        `Total tickets processed: ${result.ticket_count}`;
+                    
+                    // Generate download links
+                    const linksContainer = document.getElementById('downloadLinks');
+                    linksContainer.innerHTML = '';
+                    
+                    result.files.forEach(file => {
+                        const link = document.createElement('a');
+                        link.href = '/download/' + file.name;
+                        link.className = 'download-link';
+                        link.textContent = `📥 Download ${file.type.toUpperCase()} Report`;
+                        linksContainer.appendChild(link);
+                    });
+                    
+                    // Show download section
+                    downloadSection.style.display = 'block';
+                } else {
+                    showAlert(result.error, 'error');
+                }
+            } catch (error) {
+                showAlert('An error occurred: ' + error.message, 'error');
+            } finally {
+                generateBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
